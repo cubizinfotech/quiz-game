@@ -1,0 +1,41 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(node -e 'const prisma = require\\('\\\\''./src/config/prisma'\\\\''\\); prisma.setting.update\\({ where: { key: '\\\\''logo'\\\\'' }, data: { value: '\\\\'''\\\\'' } }\\).then\\(\\(\\) => { console.log\\('\\\\''Logo cleared'\\\\''\\); return prisma.$disconnect\\(\\); }\\).catch\\(e => { console.error\\(e\\); prisma.$disconnect\\(\\); }\\)')",
+      "Bash(ls \"c:\\\\Users\\\\DREAMWORLD\\\\.claude\\\\projects\\\\c--wamp64-www-quiz-game\\\\memory\" 2>&1)",
+      "Read(//c/Users/DREAMWORLD/.claude/projects/c--wamp64-www-quiz-game/**)",
+      "Bash(mkdir -p \"/c/Users/DREAMWORLD/.claude/projects/c--wamp64-www-quiz-game/memory\")",
+      "Bash(mkdir \"C:\\\\Users\\\\DREAMWORLD\\\\.claude\\\\projects\\\\c--wamp64-www-quiz-game\\\\memory\")",
+      "Bash(node --input-type=module --eval ' *)",
+      "Bash(curl -s \"http://localhost:5173/admin/login\")",
+      "Bash(mysql -u root quiz_game)",
+      "Bash(echo \"Exit: $?\")",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\mysql\\\\mysql8.0.31\\\\bin\\\\mysql.exe\" -u root quiz_game -e \"source C:/wamp64/www/quiz-game/backend/migrate_ads.sql\" 2>&1)",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\mysql\\\\mysql8.4.7\\\\bin\\\\mysql.exe\" -u root quiz_game -e \"DESCRIBE ads;\" 2>&1)",
+      "PowerShell(Get-Process -Name \"node\" -ErrorAction SilentlyContinue)",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\mysql\\\\mysql8.4.7\\\\bin\\\\mysql.exe\" -u root quiz_game -e \"DESCRIBE users;\" 2>&1)",
+      "PowerShell(Stop-Process -Name \"node\" -Force -ErrorAction SilentlyContinue)",
+      "Bash(node -e ' *)",
+      "Bash(node src/server.js)",
+      "Bash(npm run *)",
+      "PowerShell(Start-Process -NoNewWindow -FilePath \"node\" -ArgumentList \"src/server.js\" -WorkingDirectory \"c:\\\\wamp64\\\\www\\\\quiz-game\\\\backend\")",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:5000/api/health\" -Method GET)",
+      "Bash(npx vite *)",
+      "Bash(npx prisma *)",
+      "Bash(npx tsc *)",
+      "PowerShell(Get-Process -Name \"node\" -ErrorAction SilentlyContinue | Select-Object Id, CPU, @{N='CMD';E={$_.MainWindowTitle}} | Format-Table -AutoSize)",
+      "PowerShell(netstat -ano)",
+      "PowerShell(Invoke-RestMethod -Uri \"http://localhost:5000/api/quick-start\" -Method GET)",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\mysql\\\\mysql8.4.7\\\\bin\\\\mysql.exe\" -u root quiz_game -e \"INSERT INTO quick_start_quizzes \\(is_active, reward_coins\\) VALUES \\(1, 20\\); SET @qid = LAST_INSERT_ID\\(\\); INSERT INTO quick_start_questions \\(quiz_id, question_text, option_a, option_b, option_c, option_d, correct_answer, explanation, order_index\\) VALUES \\(@qid, 'What does HTML stand for?', 'Hyper Text Markup Language', 'High Tech Modern Language', 'Hyper Transfer Markup Logic', 'Hyperlink Text Modeling Language', 'A', 'HTML = HyperText Markup Language, the foundation of all web pages.', 0\\), \\(@qid, 'Which planet is known as the Red Planet?', 'Venus', 'Jupiter', 'Mars', 'Saturn', 'C', 'Mars has a reddish appearance due to iron oxide on its surface.', 1\\);\" 2>&1)",
+      "Read(//c/Users/DREAMWORLD/AppData/Local/Temp/quiz-screenshots/**)",
+      "PowerShell(node -e $script)",
+      "PowerShell($outDir = \"C:\\\\Users\\\\DREAMWORLD\\\\AppData\\\\Local\\\\Temp\\\\quiz-screenshots\")",
+      "PowerShell(npx playwright install chromium 2>&1)",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\mysql\\\\mysql8.4.7\\\\bin\\\\mysql.exe\" -u root quiz_game -e \"SELECT email FROM admins LIMIT 3;\" 2>&1)",
+      "Bash(Remove-Item \"c:\\\\wamp64\\\\www\\\\quiz-game\\\\backend\\\\src\\\\config\\\\prisma.js\" -Force)",
+      "Bash(Remove-Item \"c:\\\\wamp64\\\\www\\\\quiz-game\\\\backend\\\\prisma\\\\schema.prisma\" -Force)",
+      "Bash(Write-Host \"Deleted\")",
+      "PowerShell(\"Deleted\")"
+    ]
+  }
+}
