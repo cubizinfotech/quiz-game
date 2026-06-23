@@ -14,14 +14,13 @@ import AdOverlay from './AdOverlay';
  *   onClose      — called when user dismisses the modal
  *   onCoinsUpdated(newBalance) — called after a successful claim
  */
-export default function RewardModal({ attempt, quiz, isGuest, rewardedAd, onClose, onCoinsUpdated }) {
+export default function RewardModal({ attempt, quiz, isGuest, rewardedAd, onClose, onCoinsUpdated, coinsEarned: earnedCoins }) {
   const [phase, setPhase] = useState('idle'); // idle | claiming | claimed | error | watching_ad
   const [result, setResult] = useState(null);  // { coinsEarned, newBalance, doubled }
   const [errorMsg, setErrorMsg] = useState('');
 
-  const baseCoins = attempt?.score > 0
-    ? Math.round(attempt.score * (quiz?.rewardCoins || 10) / 10)
-    : 0;
+  // earnedCoins comes from submitAttempt response (correct * 100)
+  const baseCoins = earnedCoins ?? ((attempt?.correctAnswers ?? 0) * 100);
   const doubleCoins = baseCoins * 2;
 
   const claim = async (doubled = false) => {

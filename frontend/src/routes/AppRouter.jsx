@@ -5,9 +5,15 @@ import AdminRoute from './AdminRoute';
 import HomePage from '../pages/HomePage';
 import CategoryPage from '../pages/CategoryPage';
 import QuizPage from '../pages/QuizPage';
+import QuizLobbyPage from '../pages/QuizLobbyPage';
 import ResultPage from '../pages/ResultPage';
 import LoginPage from '../pages/LoginPage';
 import SignupPage from '../pages/SignupPage';
+import ContestRulesPage from '../pages/ContestRulesPage';
+import CoinHistoryPage from '../pages/CoinHistoryPage';
+import BlogPage from '../pages/BlogPage';
+import ContactPage from '../pages/ContactPage';
+import ReportPage from '../pages/ReportPage';
 
 import AdminLogin from '../pages/admin/AdminLogin';
 import Dashboard from '../pages/admin/Dashboard';
@@ -27,8 +33,14 @@ export default function AppRouter() {
         <Route element={<Layout />}>
           <Route path="/" element={<HomePage />} />
           <Route path="/category/:slug" element={<CategoryPage />} />
-          <Route path="/quiz/:slug" element={<QuizPage />} />
+          <Route path="/quiz/:slug" element={<QuizLobbyPage />} />
+          <Route path="/quiz/:slug/play" element={<QuizPage />} />
           <Route path="/result" element={<ResultPage />} />
+          <Route path="/contest-rules" element={<ContestRulesPage />} />
+          <Route path="/coin-history" element={<CoinHistoryPage />} />
+          <Route path="/blog" element={<BlogPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/report" element={<ReportPage />} />
         </Route>
 
         {/* User auth — standalone pages (no navbar) */}

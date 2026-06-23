@@ -54,16 +54,18 @@ const complete = async (req, res, next) => {
 
     const totalQ = 2;
     const correct = Math.min(Math.max(Number(correctAnswers) || 0, 0), totalQ);
-    const coinsEarned = correct > 0 ? Math.round((correct / totalQ) * quizRow.reward_coins) : 0;
+    const coinsEarned = correct * 100;
 
     let newBalance = null;
 
-    if (req.user && !req.user.isGuest && coinsEarned > 0) {
+    if (req.user && coinsEarned > 0) {
       await pool.query('UPDATE users SET coins = coins + ? WHERE id = ?', [coinsEarned, Number(req.user.id)]);
-      await pool.query(
-        'INSERT INTO coin_transactions (user_id, amount, type, description) VALUES (?, ?, ?, ?)',
-        [Number(req.user.id), coinsEarned, 'bonus', 'Quick Start Quiz reward']
-      );
+      if (!req.user.isGuest) {
+        await pool.query(
+          'INSERT INTO coin_transactions (user_id, amount, type, description) VALUES (?, ?, ?, ?)',
+          [Number(req.user.id), coinsEarned, 'bonus', 'Quick Start Quiz reward']
+        );
+      }
       const [[userRow]] = await pool.query('SELECT coins FROM users WHERE id = ? LIMIT 1', [Number(req.user.id)]);
       newBalance = userRow.coins;
     }

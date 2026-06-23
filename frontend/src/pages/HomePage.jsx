@@ -6,7 +6,7 @@ import AdBlock from '../components/AdBlock';
 import AdOverlay from '../components/AdOverlay';
 import QuickStartWidget, { LS_KEY } from '../components/QuickStartWidget';
 
-// ─── Onboarding sections (shown below the quiz on first visit) ────────────────
+// ─── Onboarding sections ──────────────────────────────────────────────────────
 
 const WHY_FEATURES = [
   { icon: '🏆', title: 'Daily Rewards',   desc: 'Login daily to get bonus coins and special rewards' },
@@ -38,7 +38,7 @@ function WhyChoose() {
 
 function CategoryTabs({ categories, activeCategory, onSelect, quizCountByCategory, totalCount }) {
   return (
-    <div className="sticky top-14 z-30 bg-bg border-b border-white/10">
+    <div className="sticky top-0 z-30 bg-bg border-b border-white/10">
       <div className="overflow-x-auto scrollbar-hide">
         <div className="flex gap-2 px-4 py-2.5 whitespace-nowrap">
           <button
@@ -101,10 +101,10 @@ export default function HomePage() {
   const [welcomeAd, setWelcomeAd]   = useState(null);
   const [activeCategory, setActiveCategory] = useState(null);
 
-  // Onboarding is done when localStorage flag is set (permanent across sessions)
   const [onboardingDone, setOnboardingDone] = useState(
-    () => localStorage.getItem(LS_KEY) === 'true'
+    () => sessionStorage.getItem(LS_KEY) === 'true'
   );
+  const [widgetShowingResult, setWidgetShowingResult] = useState(false);
 
   const welcomeTimerRef = useRef(null);
   const topRef          = useRef(null);
@@ -202,29 +202,36 @@ export default function HomePage() {
       {!onboardingDone && (
         <>
           <div className="pt-3">
-            <QuickStartWidget onComplete={handleOnboardingDone} />
+            <QuickStartWidget
+              onComplete={handleOnboardingDone}
+              onResult={() => setWidgetShowingResult(true)}
+            />
           </div>
 
-          <WhyChoose />
+          {!widgetShowingResult && (
+            <>
+              <WhyChoose />
 
-          {ads.middle && (
-            <div className="px-4 mb-5">
-              <p className="text-gray-600 text-[10px] text-center uppercase tracking-widest mb-1">Advertisement</p>
-              <AdBlock ad={ads.middle} />
-            </div>
-          )}
+              {ads.middle && (
+                <div className="px-4 mb-5">
+                  <p className="text-gray-600 text-[10px] text-center uppercase tracking-widest mb-1">Advertisement</p>
+                  <AdBlock ad={ads.middle} />
+                </div>
+              )}
 
-          {funFacts.length > 0 && (
-            <section className="mb-5">
-              <div className="px-4 mb-3">
-                <h2 className="text-white font-bold text-base">#Fun Fact</h2>
-              </div>
-              <div className="px-4 flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
-                {funFacts.map((fact) => (
-                  <FunFactCard key={fact.id} fact={fact} />
-                ))}
-              </div>
-            </section>
+              {funFacts.length > 0 && (
+                <section className="mb-5">
+                  <div className="px-4 mb-3">
+                    <h2 className="text-white font-bold text-base">#Fun Fact</h2>
+                  </div>
+                  <div className="px-4 flex gap-3 overflow-x-auto scrollbar-hide snap-x snap-mandatory">
+                    {funFacts.map((fact) => (
+                      <FunFactCard key={fact.id} fact={fact} />
+                    ))}
+                  </div>
+                </section>
+              )}
+            </>
           )}
         </>
       )}
@@ -267,7 +274,7 @@ export default function HomePage() {
                 </div>
                 <div className="px-4 flex flex-col gap-3">
                   {filteredQuizzes.map((quiz) => (
-                    <QuizCard key={quiz.id} quiz={quiz} featured={quiz.isFeatured} />
+                    <QuizCard key={quiz.id} quiz={quiz} ads={ads} featured={quiz.isFeatured} />
                   ))}
                 </div>
               </section>
@@ -301,7 +308,7 @@ export default function HomePage() {
                     </div>
                     <div className="px-4 flex flex-col gap-3">
                       {displayOthers.map((quiz) => (
-                        <QuizCard key={quiz.id} quiz={quiz} />
+                        <QuizCard key={quiz.id} quiz={quiz} ads={ads} />
                       ))}
                     </div>
                   </section>
@@ -338,10 +345,6 @@ export default function HomePage() {
           )}
         </>
       )}
-
-      <p className="text-center text-gray-600 text-xs px-4 mt-4">
-        {settings.footer_text || `© ${new Date().getFullYear()} ${settings.site_name || 'QuizGame'}. All rights reserved.`}
-      </p>
     </div>
   );
 }

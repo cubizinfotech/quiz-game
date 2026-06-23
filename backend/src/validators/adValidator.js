@@ -10,6 +10,10 @@ const ALL_POSITIONS = [
   'wrong_answer',
   'quiz_complete',
   'rewarded_video',
+  'quickstart_done',
+  'quiz_card_click',
+  'quiz_bottom',
+  'post_quiz_bonus',
 ];
 
 const adValidator = [

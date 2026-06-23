@@ -16,6 +16,9 @@ router.get('/', quizController.getAll);
 router.get('/featured', quizController.getFeatured);
 router.get('/:slug', quizController.getBySlug);
 
+// Join quiz — deducts entry fee at join time for both guests and logged-in users
+router.post('/:id/join', userAuth, quizController.joinQuiz);
+
 // Submit attempt — userAuth is optional: sets req.user when token present, null when not
 router.post('/:id/attempt', userAuth, attemptValidator, validate, quizController.submitAttempt);
 

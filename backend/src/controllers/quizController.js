@@ -121,8 +121,62 @@ const submitAttempt = async (req, res, next) => {
   try {
     const { answers, timeTaken } = req.body;
     const userId = req.user?.id || null;
-    const result = await quizService.submitAttempt(req.params.id, answers, timeTaken, userId);
+    const isGuest = req.user?.isGuest || false;
+    const result = await quizService.submitAttempt(req.params.id, answers, timeTaken, userId, isGuest);
     res.json({ success: true, message: 'Quiz submitted', data: result });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// POST /api/quizzes/:id/join — deducts entry fee at join time (guests and logged-in users both pay)
+const { pool } = require('../config/database');
+const joinQuiz = async (req, res, next) => {
+  try {
+    const quizId = Number(req.params.id);
+    const userId = req.user?.id;
+
+    const [[quiz]] = await pool.query(
+      'SELECT id, entry_fee, title, is_published FROM quizzes WHERE id = ? LIMIT 1',
+      [quizId]
+    );
+    if (!quiz || !quiz.is_published) {
+      return res.status(404).json({ success: false, message: 'Quiz not found' });
+    }
+
+    const entryFee = quiz.entry_fee || 0;
+
+    // Free quiz — no deduction needed
+    if (entryFee === 0) {
+      return res.json({ success: true, data: { entryFee: 0, newBalance: null } });
+    }
+
+    // Paid quiz with no user session
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Login required' });
+    }
+
+    // Check balance — applies equally to guests and logged-in users
+    const [[userRow]] = await pool.query('SELECT coins FROM users WHERE id = ? LIMIT 1', [Number(userId)]);
+    if (!userRow || userRow.coins < entryFee) {
+      return res.status(402).json({
+        success: false,
+        message: 'Insufficient coins',
+        data: { required: entryFee, balance: userRow?.coins ?? 0 },
+      });
+    }
+
+    // Deduct entry fee
+    await pool.query('UPDATE users SET coins = coins - ? WHERE id = ?', [entryFee, Number(userId)]);
+    try {
+      await pool.query(
+        'INSERT INTO coin_transactions (user_id, amount, type, description) VALUES (?, ?, ?, ?)',
+        [Number(userId), -entryFee, 'entry_fee', `Entry fee: ${quiz.title}`]
+      );
+    } catch { /* ignore schema issues */ }
+
+    const [[updated]] = await pool.query('SELECT coins FROM users WHERE id = ? LIMIT 1', [Number(userId)]);
+    res.json({ success: true, data: { entryFee, newBalance: updated.coins } });
   } catch (err) {
     next(err);
   }
@@ -143,4 +197,5 @@ module.exports = {
   updateQuestion,
   deleteQuestion,
   submitAttempt,
+  joinQuiz,
 };

@@ -2,6 +2,7 @@ import { useLocation, useNavigate, Link } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import api from '../api/axios';
 import RewardModal from '../components/RewardModal';
+import PostQuizBonusPopup from '../components/PostQuizBonusPopup';
 import { useUserAuth } from '../context/UserAuthContext';
 
 const OPTION_KEYS = { A: 'optionA', B: 'optionB', C: 'optionC', D: 'optionD' };
@@ -11,17 +12,24 @@ export default function ResultPage() {
   const navigate = useNavigate();
   const { isGuest, updateCoins } = useUserAuth();
 
-  const [rewardedAd, setRewardedAd] = useState(null);
+  const [rewardedAd, setRewardedAd]       = useState(null);
+  const [postQuizBonusAd, setPostQuizBonusAd] = useState(null);
   const [showRewardModal, setShowRewardModal] = useState(false);
-  const [coinBalance, setCoinBalance] = useState(null);
+  const [showBonusPopup, setShowBonusPopup]   = useState(false);
+  const [coinBalance, setCoinBalance]         = useState(null);
 
   useEffect(() => {
     if (!state?.attempt) { navigate('/', { replace: true }); return; }
     const safe = (fn) => fn.catch(() => ({ data: { data: null } }));
     safe(api.get('/ads')).then((res) => {
+      let rewarded = null;
+      let bonus = null;
       for (const ad of (res.data.data || [])) {
-        if (ad.position === 'rewarded_video') { setRewardedAd(ad); break; }
+        if (ad.position === 'rewarded_video' && !rewarded)   rewarded = ad;
+        if (ad.position === 'post_quiz_bonus' && !bonus)     bonus = ad;
       }
+      if (rewarded) setRewardedAd(rewarded);
+      if (bonus)    setPostQuizBonusAd(bonus);
     });
     // Show reward modal automatically after a short delay
     const t = setTimeout(() => setShowRewardModal(true), 600);
@@ -30,7 +38,7 @@ export default function ResultPage() {
 
   if (!state?.attempt) return null;
 
-  const { attempt, detailedAnswers, questions, quiz } = state;
+  const { attempt, detailedAnswers, questions, quiz, coinsEarned } = state;
   const { score, correctAnswers, wrongAnswers, totalQuestions, pointsEarned } = attempt;
 
   const getScoreColor = () => {
@@ -59,16 +67,34 @@ export default function ResultPage() {
     updateCoins?.(newBalance);
   };
 
+  const handleRewardModalClose = () => {
+    setShowRewardModal(false);
+    // Show the bonus popup after a brief pause if the ad is configured
+    if (postQuizBonusAd) {
+      setTimeout(() => setShowBonusPopup(true), 300);
+    }
+  };
+
   return (
     <div className="mobile-shell pb-8 bg-bg">
-      {/* Reward Modal */}
+      {/* Reward Modal — shown immediately after quiz */}
       {showRewardModal && (
         <RewardModal
           attempt={attempt}
           quiz={quiz}
           isGuest={isGuest}
           rewardedAd={rewardedAd}
-          onClose={() => setShowRewardModal(false)}
+          coinsEarned={coinsEarned}
+          onClose={handleRewardModalClose}
+          onCoinsUpdated={handleCoinsUpdated}
+        />
+      )}
+
+      {/* Post-quiz bonus popup — shown after reward modal closes */}
+      {showBonusPopup && postQuizBonusAd && (
+        <PostQuizBonusPopup
+          bonusAd={postQuizBonusAd}
+          onClose={() => setShowBonusPopup(false)}
           onCoinsUpdated={handleCoinsUpdated}
         />
       )}
@@ -164,7 +190,7 @@ export default function ResultPage() {
       {/* Action Buttons */}
       <div className="px-4 mb-6 flex flex-col gap-3">
         {/* Reopen reward modal if not yet dismissed */}
-        {!showRewardModal && (
+        {!showRewardModal && !showBonusPopup && (
           <button
             onClick={() => setShowRewardModal(true)}
             className="w-full py-3.5 bg-yellow-500/20 border border-yellow-500/40 text-yellow-300 font-bold rounded-2xl text-sm hover:bg-yellow-500/30 active:scale-95 transition-all flex items-center justify-center gap-2"

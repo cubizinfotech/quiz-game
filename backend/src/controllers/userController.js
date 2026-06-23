@@ -188,4 +188,37 @@ const getLeaderboard = async (req, res, next) => {
   }
 };
 
-module.exports = { createGuest, register, login, getMe, getAll, getLeaderboard };
+// GET /api/users/history
+const getUserHistory = async (req, res, next) => {
+  try {
+    const userId = req.user.id;
+    const [rows] = await pool.query(
+      `SELECT qa.id, qa.score, qa.correct_answers, qa.total_questions,
+              qa.points_earned, qa.coins_earned, qa.time_taken, qa.created_at,
+              q.title AS quiz_title, q.slug AS quiz_slug
+       FROM quiz_attempts qa
+       JOIN quizzes q ON q.id = qa.quiz_id
+       WHERE qa.user_id = ?
+       ORDER BY qa.created_at DESC
+       LIMIT 100`,
+      [userId]
+    );
+    const history = rows.map((row) => ({
+      id: row.id,
+      score: row.score,
+      correctAnswers: row.correct_answers,
+      totalQuestions: row.total_questions,
+      pointsEarned: row.points_earned,
+      coinsEarned: row.coins_earned ?? row.points_earned,
+      timeTaken: row.time_taken,
+      createdAt: row.created_at,
+      quizTitle: row.quiz_title,
+      quizSlug: row.quiz_slug,
+    }));
+    res.json({ success: true, data: history });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { createGuest, register, login, getMe, getAll, getLeaderboard, getUserHistory };

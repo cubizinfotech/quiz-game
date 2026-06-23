@@ -17,6 +17,9 @@ router.get('/me', userAuth, userController.getMe);
 // Public leaderboard
 router.get('/leaderboard', userController.getLeaderboard);
 
+// Authenticated user history
+router.get('/history', userAuth, userController.getUserHistory);
+
 // Admin-only
 router.get('/', adminAuth, userController.getAll);
 

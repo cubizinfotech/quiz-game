@@ -13,15 +13,19 @@ const EMPTY_FORM = {
 };
 
 const POSITIONS = [
-  { value: 'header',             label: 'Header',              hint: 'Top of every page' },
-  { value: 'middle',             label: 'Middle',              hint: 'Mid-page banner' },
-  { value: 'footer',             label: 'Footer',              hint: 'Bottom of every page' },
-  { value: 'welcome_popup',      label: 'Welcome Popup',       hint: 'Popup on homepage load (delay applies)' },
-  { value: 'before_quiz',        label: 'Before Quiz',         hint: 'Shown before quiz starts (delay applies)' },
-  { value: 'between_questions',  label: 'Between Questions',   hint: 'Shown every N questions (frequency applies)' },
-  { value: 'wrong_answer',       label: 'Wrong Answer',        hint: 'Shown when user picks wrong answer' },
-  { value: 'quiz_complete',      label: 'Quiz Complete',       hint: 'Shown before results are revealed' },
-  { value: 'rewarded_video',     label: 'Rewarded Video',      hint: 'Optional reward ad on result page (delay = watch duration)' },
+  { value: 'header',             label: 'Header',                   hint: 'Top of every page' },
+  { value: 'middle',             label: 'Middle',                   hint: 'Mid-page banner' },
+  { value: 'footer',             label: 'Footer',                   hint: 'Bottom of every page' },
+  { value: 'welcome_popup',      label: 'Welcome Popup',            hint: 'Popup on homepage load (delay applies)' },
+  { value: 'before_quiz',        label: 'Before Quiz',              hint: 'Shown before quiz starts (delay applies)' },
+  { value: 'between_questions',  label: 'Between Questions',        hint: 'Shown every N questions (frequency applies)' },
+  { value: 'wrong_answer',       label: 'Wrong Answer',             hint: 'Shown when user picks wrong answer' },
+  { value: 'quiz_complete',      label: 'Quiz Complete',            hint: 'Shown before results are revealed' },
+  { value: 'rewarded_video',     label: 'Rewarded Video',           hint: 'Watch-to-double on result page & insufficient-coins wall (delay = watch duration)' },
+  { value: 'quickstart_done',    label: 'After Quick Start',        hint: 'Shown when user clicks "Play Now" after Quick Start quiz (delay applies)' },
+  { value: 'quiz_card_click',    label: 'Quiz Card Click',          hint: 'Shown when user taps a quiz card before entering lobby (delay applies)' },
+  { value: 'quiz_bottom',        label: 'Quiz Bottom Banner',       hint: 'Persistent banner at the bottom of the quiz play page' },
+  { value: 'post_quiz_bonus',    label: 'Post-Quiz Bonus Popup',    hint: 'Popup after results claiming 100 bonus coins — user watches ad to claim (delay = watch duration)' },
 ];
 
 const AD_TYPES = ['html', 'adsense'];
@@ -36,11 +40,15 @@ const positionColors = {
   wrong_answer:       'bg-red-500/20 text-red-400',
   quiz_complete:      'bg-green-500/20 text-green-400',
   rewarded_video:     'bg-yellow-500/20 text-yellow-400',
+  quickstart_done:    'bg-teal-500/20 text-teal-400',
+  quiz_card_click:    'bg-violet-500/20 text-violet-400',
+  quiz_bottom:        'bg-slate-400/20 text-slate-300',
+  post_quiz_bonus:    'bg-amber-500/20 text-amber-400',
 };
 
 const positionLabel = Object.fromEntries(POSITIONS.map((p) => [p.value, p.label]));
 
-const showDelay = (pos) => ['welcome_popup', 'before_quiz', 'rewarded_video'].includes(pos);
+const showDelay = (pos) => ['welcome_popup', 'before_quiz', 'rewarded_video', 'quickstart_done', 'quiz_card_click', 'post_quiz_bonus'].includes(pos);
 const showFrequency = (pos) => pos === 'between_questions';
 
 export default function ManageAds() {

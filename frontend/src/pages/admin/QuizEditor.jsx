@@ -29,6 +29,7 @@ export default function QuizEditor() {
     rewardPoints: 10,
     rewardCoins: 10,
     timeLimit: 0,
+    entryFee: 0,
     isPublished: true,
     isFeatured: false,
   });
@@ -57,6 +58,7 @@ export default function QuizEditor() {
             rewardPoints: quiz.rewardPoints,
             rewardCoins: quiz.rewardCoins ?? 10,
             timeLimit: quiz.timeLimit || 0,
+            entryFee: quiz.entryFee ?? 0,
             isPublished: quiz.isPublished,
             isFeatured: quiz.isFeatured,
           });
@@ -234,15 +236,30 @@ export default function QuizEditor() {
                     onChange={(e) => setQuizForm({ ...quizForm, rewardCoins: Number(e.target.value) })}
                   />
                 </div>
-                <div className="col-span-2">
-                  <label className="text-slate-400 text-xs font-semibold block mb-1.5">Time Limit (sec)</label>
+                <div>
+                  <label className="text-slate-400 text-xs font-semibold block mb-1.5">🪙 Entry Fee (coins)</label>
                   <input
                     type="number"
                     min="0"
+                    step="50"
+                    placeholder="0 = Free"
+                    className="w-full bg-slate-800 border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
+                    value={quizForm.entryFee}
+                    onChange={(e) => setQuizForm({ ...quizForm, entryFee: Number(e.target.value) })}
+                  />
+                </div>
+                <div className="col-span-2">
+                  <label className="text-slate-400 text-xs font-semibold block mb-1.5">⏱ Timer (seconds) — shown as countdown during quiz</label>
+                  <input
+                    type="number"
+                    min="30"
+                    step="10"
+                    placeholder="e.g. 200"
                     className="w-full bg-slate-800 border border-white/10 text-white rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
                     value={quizForm.timeLimit}
                     onChange={(e) => setQuizForm({ ...quizForm, timeLimit: Number(e.target.value) })}
                   />
+                  <p className="text-slate-600 text-xs mt-1">Quiz auto-submits when timer reaches 0. Default: 200s.</p>
                 </div>
               </div>
 

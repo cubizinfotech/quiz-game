@@ -121,7 +121,7 @@ export default function ManageSettings() {
                 <label className="text-slate-400 text-xs font-semibold block mb-1.5">Footer Text</label>
                 <input
                   className="w-full bg-slate-800 border border-white/10 text-white placeholder-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                  placeholder="© 2026 QuizGame. All rights reserved."
+                  placeholder=""
                   value={form.footer_text}
                   onChange={(e) => setForm({ ...form, footer_text: e.target.value })}
                 />

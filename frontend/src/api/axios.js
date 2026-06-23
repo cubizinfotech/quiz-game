@@ -14,7 +14,7 @@ api.interceptors.request.use((config) => {
     window.location.pathname.startsWith('/admin');
   const token = isAdminContext
     ? localStorage.getItem('admin_token')
-    : localStorage.getItem('user_token');
+    : (localStorage.getItem('user_token') || sessionStorage.getItem('user_token'));
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }

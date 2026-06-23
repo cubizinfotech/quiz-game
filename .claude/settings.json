@@ -35,7 +35,8 @@
       "Bash(Remove-Item \"c:\\\\wamp64\\\\www\\\\quiz-game\\\\backend\\\\src\\\\config\\\\prisma.js\" -Force)",
       "Bash(Remove-Item \"c:\\\\wamp64\\\\www\\\\quiz-game\\\\backend\\\\prisma\\\\schema.prisma\" -Force)",
       "Bash(Write-Host \"Deleted\")",
-      "PowerShell(\"Deleted\")"
+      "PowerShell(\"Deleted\")",
+      "PowerShell(& \"C:\\\\wamp64\\\\bin\\\\mysql\\\\mysql8.4.7\\\\bin\\\\mysql.exe\" -u root quiz_game -e \"SHOW COLUMNS FROM quizzes LIKE 'entry_fee';\")"
     ]
   }
 }

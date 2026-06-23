@@ -3,7 +3,7 @@ const router = express.Router();
 const { body } = require('express-validator');
 const validate = require('../middleware/validate');
 const userAuth = require('../middleware/userAuth');
-const { claimReward } = require('../controllers/rewardController');
+const { claimReward, adBonus } = require('../controllers/rewardController');
 
 router.post(
   '/claim',
@@ -15,5 +15,7 @@ router.post(
   validate,
   claimReward
 );
+
+router.post('/ad-bonus', userAuth, adBonus);
 
 module.exports = router;

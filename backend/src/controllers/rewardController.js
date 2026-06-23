@@ -35,7 +35,7 @@ const claimReward = async (req, res, next) => {
       });
     }
 
-    const baseCoins = Math.round(attempt.score * (attempt.reward_coins || 10) / 10);
+    const baseCoins = (attempt.correct_answers || 0) * 100;
     const coinsEarned = doubled ? baseCoins * 2 : baseCoins;
     const type = doubled ? 'double_reward' : 'quiz_reward';
     const description = `${attempt.quiz_title}${doubled ? ' (doubled)' : ''}`;
@@ -70,4 +70,27 @@ const claimReward = async (req, res, next) => {
   }
 };
 
-module.exports = { claimReward };
+// POST /api/rewards/ad-bonus — award 100 coins for watching a rewarded video ad
+const adBonus = async (req, res, next) => {
+  try {
+    const userId = req.user?.id;
+    if (!userId) {
+      return res.status(401).json({ success: false, message: 'Login required' });
+    }
+    const BONUS = 100;
+    await pool.query('UPDATE users SET coins = coins + ? WHERE id = ?', [BONUS, Number(userId)]);
+    // Attempt to log the transaction — silently skip if ENUM type not yet in schema
+    try {
+      await pool.query(
+        'INSERT INTO coin_transactions (user_id, amount, type, description) VALUES (?, ?, ?, ?)',
+        [Number(userId), BONUS, 'ad_bonus', 'Rewarded video ad bonus']
+      );
+    } catch { /* coin_transactions ENUM may not include ad_bonus yet */ }
+    const [[userRow]] = await pool.query('SELECT coins FROM users WHERE id = ? LIMIT 1', [Number(userId)]);
+    res.json({ success: true, data: { coinsAwarded: BONUS, newBalance: userRow.coins } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+module.exports = { claimReward, adBonus };

@@ -142,8 +142,8 @@ const getBySlug = async (slug) => {
 const create = async (data) => {
   const slug = generateSlug(data.title);
   const [result] = await pool.query(
-    `INSERT INTO quizzes (title, slug, description, category_id, reward_points, reward_coins, time_limit, is_published, is_featured, thumbnail)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+    `INSERT INTO quizzes (title, slug, description, category_id, reward_points, reward_coins, time_limit, entry_fee, is_published, is_featured, thumbnail)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       data.title,
       slug,
@@ -152,6 +152,7 @@ const create = async (data) => {
       data.rewardPoints || 10,
       data.rewardCoins || 10,
       data.timeLimit || 0,
+      data.entryFee || 0,
       data.isPublished ? 1 : 0,
       data.isFeatured ? 1 : 0,
       data.thumbnail || null,
@@ -181,6 +182,7 @@ const update = async (id, data) => {
   if (data.rewardPoints !== undefined) { fields.push('reward_points = ?'); values.push(data.rewardPoints); }
   if (data.rewardCoins !== undefined)  { fields.push('reward_coins = ?');  values.push(data.rewardCoins); }
   if (data.timeLimit !== undefined)    { fields.push('time_limit = ?');    values.push(data.timeLimit); }
+  if (data.entryFee !== undefined)     { fields.push('entry_fee = ?');     values.push(data.entryFee); }
   if (data.isPublished !== undefined)  { fields.push('is_published = ?');  values.push(data.isPublished ? 1 : 0); }
   if (data.isFeatured !== undefined)   { fields.push('is_featured = ?');   values.push(data.isFeatured ? 1 : 0); }
   if (data.thumbnail !== undefined)    { fields.push('thumbnail = ?');     values.push(data.thumbnail); }
@@ -339,7 +341,7 @@ const deleteQuestion = async (quizId, questionId) => {
   await pool.query('DELETE FROM questions WHERE id = ?', [Number(questionId)]);
 };
 
-const submitAttempt = async (quizId, answers, timeTaken = 0, userId = null) => {
+const submitAttempt = async (quizId, answers, timeTaken = 0, userId = null, isGuest = false) => {
   const [[quizRow]] = await pool.query(
     'SELECT * FROM quizzes WHERE id = ? AND is_published = 1 LIMIT 1',
     [Number(quizId)]
@@ -348,6 +350,19 @@ const submitAttempt = async (quizId, answers, timeTaken = 0, userId = null) => {
     const err = new Error('Quiz not found');
     err.statusCode = 404;
     throw err;
+  }
+
+  // Enforce entry fee for logged-in (non-guest) users
+  const entryFee = quizRow.entry_fee || 0;
+  if (entryFee > 0 && userId && !isGuest) {
+    const [[userRow]] = await pool.query('SELECT coins FROM users WHERE id = ? LIMIT 1', [Number(userId)]);
+    if (!userRow || userRow.coins < entryFee) {
+      const err = new Error('Insufficient coins to join this quiz');
+      err.statusCode = 402;
+      throw err;
+    }
+    // Deduct entry fee — no coin_transactions log to avoid ENUM constraint
+    await pool.query('UPDATE users SET coins = coins - ? WHERE id = ?', [entryFee, Number(userId)]);
   }
 
   const [questionRows] = await pool.query(
@@ -371,6 +386,7 @@ const submitAttempt = async (quizId, answers, timeTaken = 0, userId = null) => {
   const total = questionRows.length;
   const score = total > 0 ? Math.round((correct / total) * 100) : 0;
   const pointsEarned = correct > 0 ? Math.round((correct / total) * quizRow.reward_points) : 0;
+  const coinsEarned = correct * 100;
 
   const [attemptResult] = await pool.query(
     `INSERT INTO quiz_attempts (quiz_id, user_id, score, total_questions, correct_answers, wrong_answers, points_earned, time_taken)
@@ -382,9 +398,20 @@ const submitAttempt = async (quizId, answers, timeTaken = 0, userId = null) => {
   await Promise.all([
     pool.query('UPDATE quizzes SET total_plays = total_plays + 1 WHERE id = ?', [Number(quizId)]),
     userId
-      ? pool.query('UPDATE users SET total_points = total_points + ? WHERE id = ?', [pointsEarned, Number(userId)])
+      ? isGuest
+        // Guests cannot use the /rewards/claim flow — award coins directly here
+        ? pool.query('UPDATE users SET total_points = total_points + ?, coins = coins + ? WHERE id = ?', [pointsEarned, coinsEarned, Number(userId)])
+        // Logged-in users claim coins separately via /rewards/claim
+        : pool.query('UPDATE users SET total_points = total_points + ? WHERE id = ?', [pointsEarned, Number(userId)])
       : Promise.resolve(),
   ]);
+
+  // Return the new balance for guests, and for non-guests who paid an entry fee
+  let newCoinBalance = null;
+  if (userId && (isGuest || entryFee > 0)) {
+    const [[userRow]] = await pool.query('SELECT coins FROM users WHERE id = ?', [Number(userId)]);
+    newCoinBalance = userRow?.coins ?? null;
+  }
 
   const [[attempt]] = await pool.query('SELECT * FROM quiz_attempts WHERE id = ?', [attemptId]);
 
@@ -399,7 +426,7 @@ const submitAttempt = async (quizId, answers, timeTaken = 0, userId = null) => {
     };
   });
 
-  return { attempt: mapRow(attempt), detailedAnswers };
+  return { attempt: mapRow(attempt), detailedAnswers, coinsEarned, newCoinBalance };
 };
 
 module.exports = {

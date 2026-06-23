@@ -1,13 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import api from '../api/axios';
+import AdOverlay from './AdOverlay';
 import { useUserAuth } from '../context/UserAuthContext';
 
 const OPTION_KEYS   = ['optionA', 'optionB', 'optionC', 'optionD'];
 const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 export const LS_KEY = 'quickQuizCompleted';
 
-export default function QuickStartWidget({ onComplete }) {
+export default function QuickStartWidget({ onComplete, onResult }) {
   const { isGuest, updateCoins } = useUserAuth();
 
   const [quiz, setQuiz]                 = useState(null);
@@ -17,11 +18,14 @@ export default function QuickStartWidget({ onComplete }) {
   const [correctCount, setCorrectCount] = useState(0);
   const [phase, setPhase]               = useState('idle');
   const [reward, setReward]             = useState(null);
+  const [doneAd, setDoneAd]             = useState(null);
+  const [showDoneAd, setShowDoneAd]     = useState(false);
 
   const totalQ = questions.length;
+  const handleNextRef = useRef();
 
   useEffect(() => {
-    if (localStorage.getItem(LS_KEY) === 'true') { setPhase('empty'); return; }
+    if (sessionStorage.getItem(LS_KEY) === 'true') { setPhase('empty'); return; }
     setPhase('loading');
     api.get('/quick-start')
       .then((res) => {
@@ -39,6 +43,7 @@ export default function QuickStartWidget({ onComplete }) {
     const label = OPTION_LABELS[idx];
     setSelected(label);
     if (label === questions[current].correctAnswer) setCorrectCount((c) => c + 1);
+    setTimeout(() => handleNextRef.current(), 1200);
   };
 
   const handleNext = () => {
@@ -49,29 +54,40 @@ export default function QuickStartWidget({ onComplete }) {
       finishQuiz(correctCount);
     }
   };
+  handleNextRef.current = handleNext;
 
   const finishQuiz = async (finalCorrect) => {
     setPhase('claiming');
-    localStorage.setItem(LS_KEY, 'true');
+    onResult?.();
+    sessionStorage.setItem(LS_KEY, 'true');
+    let coinsEarned = finalCorrect * 100;
     try {
-      const res = await api.post('/quick-start/complete', {
-        quizId: quiz.id,
-        correctAnswers: finalCorrect,
-      });
-      const { coinsEarned, newBalance } = res.data.data;
-      setReward({ coinsEarned, newBalance });
-      if (newBalance !== null) updateCoins?.(newBalance);
-    } catch {
-      const approxCoins = finalCorrect > 0
-        ? Math.round((finalCorrect / totalQ) * (quiz?.rewardCoins || 20))
-        : 0;
-      setReward({ coinsEarned: approxCoins, newBalance: null });
-    }
+      const [completeRes, adsRes] = await Promise.all([
+        api.post('/quick-start/complete', { quizId: quiz.id, correctAnswers: finalCorrect }),
+        api.get('/ads').catch(() => ({ data: { data: [] } })),
+      ]);
+      const data = completeRes.data.data;
+      coinsEarned = data.coinsEarned ?? coinsEarned;
+      if (data.newBalance != null) updateCoins(data.newBalance);
+      const ad = (adsRes.data.data || []).find((a) => a.position === 'quickstart_done');
+      if (ad) setDoneAd(ad);
+    } catch { /* coins not awarded if API fails */ }
+    setReward({ coinsEarned });
     setPhase('done');
   };
 
-  // Called when user clicks "Start Playing" — triggers parent to show main home
+  // Shows ad (if configured) before handing off to parent
   const handleStartPlaying = () => {
+    if (doneAd) {
+      setShowDoneAd(true);
+    } else {
+      setPhase('empty');
+      onComplete?.();
+    }
+  };
+
+  const handleDoneAdClose = () => {
+    setShowDoneAd(false);
     setPhase('empty');
     onComplete?.();
   };
@@ -94,66 +110,62 @@ export default function QuickStartWidget({ onComplete }) {
     );
   }
 
-  // ── Reward modal ─────────────────────────────────────────────────────────────
+  // ── Reward page (inline, replaces quiz after completion) ────────────────────
   if (phase === 'claiming' || phase === 'done') {
     return (
-      <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
-        <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" />
-        <div className="relative w-full max-w-sm mx-auto bg-card border border-white/10 rounded-t-3xl sm:rounded-3xl p-6 shadow-2xl">
+      <div className="px-4 pb-6 pt-2">
+        {/* Ad overlay shown when user clicks "Play Now" */}
+        {showDoneAd && doneAd && (
+          <AdOverlay ad={doneAd} onClose={handleDoneAdClose} />
+        )}
+
+        {/* Reward card */}
+        <div className="bg-card border border-white/10 rounded-3xl p-6 text-center shadow-2xl mb-6">
           {phase === 'claiming' ? (
             <div className="flex flex-col items-center py-8 gap-3">
               <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-              <p className="text-gray-400 text-sm">Claiming your reward…</p>
+              <p className="text-gray-400 text-sm">Calculating your reward…</p>
             </div>
           ) : (
             <>
-              <div className="text-center mb-5">
-                <div className="text-5xl mb-2">{scoreEmoji()}</div>
-                <h2 className="text-white text-xl font-black">
-                  {correctCount === totalQ ? 'Perfect Score!' : correctCount > 0 ? 'Well done!' : 'Keep practicing!'}
-                </h2>
-                <p className="text-gray-400 text-sm mt-1">{correctCount}/{totalQ} correct answers</p>
-              </div>
-
-              <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl p-4 mb-5 text-center">
-                <p className="text-gray-400 text-xs mb-1">Coins Earned</p>
-                <div className="flex items-center justify-center gap-2">
-                  <span className="text-3xl">🪙</span>
-                  <span className="text-yellow-400 text-4xl font-black">{reward?.coinsEarned ?? 0}</span>
-                </div>
-                {reward?.newBalance != null ? (
-                  <p className="text-gray-400 text-xs mt-2">
-                    New balance: <span className="text-yellow-400 font-bold">{reward.newBalance} coins</span>
-                  </p>
-                ) : isGuest ? (
-                  <p className="text-gray-500 text-xs mt-2">Sign up to save your coins!</p>
-                ) : null}
-              </div>
-
-              {isGuest && (
-                <div className="bg-primary/10 border border-primary/30 rounded-xl p-4 mb-4 text-center">
-                  <p className="text-white text-sm font-bold mb-1">Save your coins!</p>
-                  <p className="text-gray-400 text-xs mb-3 leading-relaxed">
-                    Create a free account to keep your coins and compete on the leaderboard.
-                  </p>
-                  <Link
-                    to="/signup"
-                    className="block w-full py-2.5 bg-primary text-white text-sm font-bold rounded-xl hover:bg-blue-600 active:scale-95 transition-all"
-                  >
-                    Create Free Account
-                  </Link>
-                </div>
-              )}
-
+              <div className="text-6xl mb-3">🏆</div>
+              <p className="text-white text-xl font-bold leading-snug">
+                You Have got{' '}
+                <span className="text-yellow-400 font-black">{reward?.coinsEarned ?? 0}</span>
+                {' '}coins
+              </p>
               <button
                 onClick={handleStartPlaying}
-                className="w-full py-3.5 bg-primary text-white font-bold rounded-xl text-sm hover:bg-blue-600 active:scale-95 transition-all"
+                className="mt-5 w-full py-4 bg-primary hover:bg-blue-600 text-white font-bold rounded-2xl text-base active:scale-95 transition-all"
               >
-                Start Playing →
+                Play Now
               </button>
             </>
           )}
         </div>
+
+        {/* Marketing section */}
+        {phase === 'done' && (
+          <div>
+            <h2 className="text-white text-xl font-black text-center">
+              Play Quiz and Win Coins!
+            </h2>
+            <div className="w-24 h-0.5 bg-primary/50 mx-auto mt-1.5 mb-5" />
+            <ul className="space-y-3.5">
+              {[
+                'Play Quizzes in 25+ categories like GK, Sports, Bollywood, Business, Cricket & more!',
+                'Compete with lakhs of other players!',
+                'Win coins for every game',
+                'Trusted by millions of other quiz enthusiasts like YOU!',
+              ].map((item, i) => (
+                <li key={i} className="flex items-start gap-2.5 text-gray-300 text-sm leading-relaxed">
+                  <span className="mt-1.5 shrink-0 w-1.5 h-1.5 rounded-full bg-primary" />
+                  <span>{item}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
       </div>
     );
   }
@@ -178,7 +190,7 @@ export default function QuickStartWidget({ onComplete }) {
       <div className="text-center mb-4 pt-2">
         <h2 className="text-white text-2xl font-black">Quick Start!</h2>
         <p className="text-gray-400 text-sm mt-1">
-          Answer {totalQ} questions and win upto {quiz?.rewardCoins || 20} coins.
+          Answer {totalQ} questions and win up to {totalQ * 100} coins.
         </p>
       </div>
 
@@ -213,15 +225,6 @@ export default function QuickStartWidget({ onComplete }) {
             <p className="text-blue-300 text-xs font-semibold mb-0.5">💡 Explanation</p>
             <p className="text-blue-200 text-xs leading-relaxed">{question.explanation}</p>
           </div>
-        )}
-
-        {selected !== null && (
-          <button
-            onClick={handleNext}
-            className="w-full py-3.5 bg-primary text-white font-bold rounded-xl text-sm hover:bg-blue-600 active:scale-95 transition-all mt-1"
-          >
-            {current + 1 < totalQ ? 'Next Question →' : 'See Results 🎉'}
-          </button>
         )}
       </div>
     </div>
