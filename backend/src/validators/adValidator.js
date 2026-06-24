@@ -10,6 +10,7 @@ const ALL_POSITIONS = [
   'wrong_answer',
   'quiz_complete',
   'rewarded_video',
+  'quickstart_between',
   'quickstart_done',
   'quiz_card_click',
   'quiz_bottom',
@@ -18,7 +19,10 @@ const ALL_POSITIONS = [
 
 const adValidator = [
   body('name').trim().notEmpty().withMessage('Ad name is required').isLength({ max: 255 }),
-  body('position').isIn(ALL_POSITIONS).withMessage('Invalid ad position'),
+  body('position')
+    .trim()
+    .notEmpty().withMessage('Position is required')
+    .isIn(ALL_POSITIONS).withMessage('Invalid ad position'),
   body('adType').isIn(['adsense', 'html']).withMessage('Ad type must be adsense or html'),
   body('content').trim().notEmpty().withMessage('Ad content is required'),
   body('isActive').optional().isBoolean(),

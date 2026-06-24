@@ -22,6 +22,7 @@ const POSITIONS = [
   { value: 'wrong_answer',       label: 'Wrong Answer',             hint: 'Shown when user picks wrong answer' },
   { value: 'quiz_complete',      label: 'Quiz Complete',            hint: 'Shown before results are revealed' },
   { value: 'rewarded_video',     label: 'Rewarded Video',           hint: 'Watch-to-double on result page & insufficient-coins wall (delay = watch duration)' },
+  { value: 'quickstart_between', label: 'Quick Start Between Questions', hint: 'Shown after each of the 2 Quick Start questions (delay applies)' },
   { value: 'quickstart_done',    label: 'After Quick Start',        hint: 'Shown when user clicks "Play Now" after Quick Start quiz (delay applies)' },
   { value: 'quiz_card_click',    label: 'Quiz Card Click',          hint: 'Shown when user taps a quiz card before entering lobby (delay applies)' },
   { value: 'quiz_bottom',        label: 'Quiz Bottom Banner',       hint: 'Persistent banner at the bottom of the quiz play page' },
@@ -40,6 +41,7 @@ const positionColors = {
   wrong_answer:       'bg-red-500/20 text-red-400',
   quiz_complete:      'bg-green-500/20 text-green-400',
   rewarded_video:     'bg-yellow-500/20 text-yellow-400',
+  quickstart_between: 'bg-emerald-500/20 text-emerald-400',
   quickstart_done:    'bg-teal-500/20 text-teal-400',
   quiz_card_click:    'bg-violet-500/20 text-violet-400',
   quiz_bottom:        'bg-slate-400/20 text-slate-300',
@@ -48,7 +50,7 @@ const positionColors = {
 
 const positionLabel = Object.fromEntries(POSITIONS.map((p) => [p.value, p.label]));
 
-const showDelay = (pos) => ['welcome_popup', 'before_quiz', 'rewarded_video', 'quickstart_done', 'quiz_card_click', 'post_quiz_bonus'].includes(pos);
+const showDelay = (pos) => ['welcome_popup', 'before_quiz', 'rewarded_video', 'quickstart_between', 'quickstart_done', 'quiz_card_click', 'post_quiz_bonus'].includes(pos);
 const showFrequency = (pos) => pos === 'between_questions';
 
 export default function ManageAds() {
@@ -74,11 +76,14 @@ export default function ManageAds() {
   };
 
   const openEdit = (ad) => {
+    const validPosition = POSITIONS.find((p) => p.value === ad.position)
+      ? ad.position
+      : POSITIONS[0].value;
     setForm({
       name: ad.name,
-      position: ad.position,
-      adType: ad.adType,
-      content: ad.content,
+      position: validPosition,
+      adType: ['html', 'adsense'].includes(ad.adType) ? ad.adType : 'html',
+      content: ad.content || '',
       isActive: ad.isActive,
       delaySeconds: ad.delaySeconds ?? 0,
       frequency: ad.frequency ?? 1,

@@ -213,13 +213,13 @@ export default function QuizPage() {
   };
 
   const getOptionStyle = (label) => {
-    if (selected === null) {
-      return 'bg-card text-white hover:bg-primary/15 active:bg-primary/25 cursor-pointer';
-    }
     const q = questions[current];
-    if (label === q.correctAnswer)                          return 'bg-green-500/25 text-green-300';
-    if (label === selected && selected !== q.correctAnswer) return 'bg-red-500/25 text-red-300';
-    return 'bg-card text-gray-500 cursor-default';
+    if (selected === null) {
+      return 'bg-bg border border-white/10 text-white hover:border-primary/50 hover:bg-primary/5 active:scale-[0.97] cursor-pointer';
+    }
+    if (label === q.correctAnswer)                          return 'bg-green-500/20 border border-green-500 text-green-300';
+    if (label === selected && selected !== q.correctAnswer) return 'bg-red-500/20 border border-red-500 text-red-300';
+    return 'bg-bg border border-white/10 text-gray-500 cursor-default';
   };
 
   // ── Loading / error states ─────────────────────────────────────────────────
@@ -298,22 +298,20 @@ export default function QuizPage() {
           </div>
 
           {/* Question + options card */}
-          <div className="bg-card border border-white/10 rounded-2xl overflow-hidden">
+          <div className="bg-card border border-white/10 rounded-2xl p-5">
             {/* Question text */}
-            <div className="px-5 pt-5 pb-4 border-b border-white/5 min-h-[90px] flex items-center justify-center">
-              <p className="text-white text-base font-semibold text-center leading-relaxed">
-                {question.questionText}
-              </p>
-            </div>
+            <p className="text-white text-base font-semibold text-center leading-relaxed mb-5 min-h-[48px] flex items-center justify-center">
+              {question.questionText}
+            </p>
 
             {/* 2×2 options grid */}
-            <div className="grid grid-cols-2 gap-px bg-white/5">
+            <div className="grid grid-cols-2 gap-3 mb-3">
               {OPTION_LABELS.map((label, i) => (
                 <button
                   key={label}
                   onClick={() => handleSelect(label)}
                   disabled={selected !== null}
-                  className={`py-5 px-4 text-sm font-semibold text-center leading-snug transition-all duration-200 ${getOptionStyle(label)}`}
+                  className={`py-4 px-3 rounded-xl text-sm font-semibold text-center leading-snug transition-all duration-150 ${getOptionStyle(label)}`}
                 >
                   {question[OPTION_KEYS[i]]}
                 </button>
@@ -322,7 +320,7 @@ export default function QuizPage() {
 
             {/* Explanation */}
             {selected !== null && question.explanation && (
-              <div className="m-4 p-3 bg-blue-500/10 border border-blue-500/30 rounded-xl">
+              <div className="p-3 bg-blue-500/10 border border-blue-500/25 rounded-xl">
                 <p className="text-blue-300 text-xs font-semibold mb-0.5">💡 Explanation</p>
                 <p className="text-blue-200 text-xs leading-relaxed">{question.explanation}</p>
               </div>

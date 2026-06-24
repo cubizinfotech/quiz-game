@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link } from 'react-router-dom';
 import api from '../api/axios';
 import AdOverlay from './AdOverlay';
+import PostQuizBonusPopup from './PostQuizBonusPopup';
 import { useUserAuth } from '../context/UserAuthContext';
 
 const OPTION_KEYS   = ['optionA', 'optionB', 'optionC', 'optionD'];
@@ -20,41 +20,90 @@ export default function QuickStartWidget({ onComplete, onResult }) {
   const [reward, setReward]             = useState(null);
   const [doneAd, setDoneAd]             = useState(null);
   const [showDoneAd, setShowDoneAd]     = useState(false);
+  const [betweenAd, setBetweenAd]       = useState(null);
+  const [showBetweenAd, setShowBetweenAd] = useState(false);
+  const [bonusAd, setBonusAd]           = useState(null);
+  const [showBonusPopup, setShowBonusPopup] = useState(false);
 
-  const totalQ = questions.length;
-  const handleNextRef = useRef();
+  const totalQ            = questions.length;
+  const handleNextRef     = useRef();
+  const afterBetweenAdRef = useRef(null);
+  const pendingFinishRef  = useRef(null);
+  const correctCountRef   = useRef(0);
 
   useEffect(() => {
     if (sessionStorage.getItem(LS_KEY) === 'true') { setPhase('empty'); return; }
     setPhase('loading');
-    api.get('/quick-start')
-      .then((res) => {
-        const data = res.data.data;
-        if (!data || !data.isActive || !data.questions?.length) { setPhase('empty'); return; }
-        setQuiz(data);
-        setQuestions(data.questions.slice(0, 2));
-        setPhase('playing');
-      })
-      .catch(() => setPhase('empty'));
+    Promise.all([
+      api.get('/quick-start'),
+      api.get('/ads').catch(() => ({ data: { data: [] } })),
+    ]).then(([res, adsRes]) => {
+      const data = res.data.data;
+      if (!data || !data.isActive || !data.questions?.length) { setPhase('empty'); return; }
+      setQuiz(data);
+      setQuestions(data.questions.slice(0, 2));
+      const ads = adsRes.data.data || [];
+      const between = ads.find((a) => a.position === 'quickstart_between');
+      const bonus   = ads.find((a) => a.position === 'post_quiz_bonus');
+      if (between) setBetweenAd(between);
+      if (bonus)   setBonusAd(bonus);
+      setPhase('playing');
+    }).catch(() => setPhase('empty'));
   }, []);
 
   const handleSelect = (idx) => {
     if (selected !== null) return;
     const label = OPTION_LABELS[idx];
     setSelected(label);
-    if (label === questions[current].correctAnswer) setCorrectCount((c) => c + 1);
-    setTimeout(() => handleNextRef.current(), 1200);
+    if (label === questions[current].correctAnswer) {
+      correctCountRef.current += 1;
+      setCorrectCount(correctCountRef.current);
+    }
+    handleNextRef.current();
   };
 
   const handleNext = () => {
-    if (current + 1 < totalQ) {
-      setCurrent((c) => c + 1);
-      setSelected(null);
+    const isLastQuestion = current + 1 >= totalQ;
+
+    const advance = () => {
+      if (!isLastQuestion) {
+        setCurrent((c) => c + 1);
+        setSelected(null);
+      } else if (bonusAd) {
+        // Show bonus popup before finishing
+        pendingFinishRef.current = () => finishQuiz(correctCountRef.current);
+        setShowBonusPopup(true);
+      } else {
+        finishQuiz(correctCountRef.current);
+      }
+    };
+
+    if (betweenAd) {
+      afterBetweenAdRef.current = advance;
+      setShowBetweenAd(true);
     } else {
-      finishQuiz(correctCount);
+      advance();
     }
   };
   handleNextRef.current = handleNext;
+
+  const handleBetweenAdClose = () => {
+    setShowBetweenAd(false);
+    const cb = afterBetweenAdRef.current;
+    afterBetweenAdRef.current = null;
+    if (cb) cb();
+  };
+
+  const handleBonusClose = () => {
+    setShowBonusPopup(false);
+    const cb = pendingFinishRef.current;
+    pendingFinishRef.current = null;
+    if (cb) cb();
+  };
+
+  const handleBonusCoinsUpdated = (newBalance) => {
+    if (newBalance != null) updateCoins(newBalance);
+  };
 
   const finishQuiz = async (finalCorrect) => {
     setPhase('claiming');
@@ -76,7 +125,6 @@ export default function QuickStartWidget({ onComplete, onResult }) {
     setPhase('done');
   };
 
-  // Shows ad (if configured) before handing off to parent
   const handleStartPlaying = () => {
     if (doneAd) {
       setShowDoneAd(true);
@@ -92,12 +140,6 @@ export default function QuickStartWidget({ onComplete, onResult }) {
     onComplete?.();
   };
 
-  const scoreEmoji = () => {
-    if (correctCount === totalQ) return '🏆';
-    if (correctCount > 0) return '⭐';
-    return '💪';
-  };
-
   if (phase === 'idle' || phase === 'empty') return null;
 
   // ── Loading ──────────────────────────────────────────────────────────────────
@@ -110,16 +152,14 @@ export default function QuickStartWidget({ onComplete, onResult }) {
     );
   }
 
-  // ── Reward page (inline, replaces quiz after completion) ────────────────────
+  // ── Reward page ──────────────────────────────────────────────────────────────
   if (phase === 'claiming' || phase === 'done') {
     return (
       <div className="px-4 pb-6 pt-2">
-        {/* Ad overlay shown when user clicks "Play Now" */}
         {showDoneAd && doneAd && (
           <AdOverlay ad={doneAd} onClose={handleDoneAdClose} />
         )}
 
-        {/* Reward card */}
         <div className="bg-card border border-white/10 rounded-3xl p-6 text-center shadow-2xl mb-6">
           {phase === 'claiming' ? (
             <div className="flex flex-col items-center py-8 gap-3">
@@ -144,7 +184,6 @@ export default function QuickStartWidget({ onComplete, onResult }) {
           )}
         </div>
 
-        {/* Marketing section */}
         {phase === 'done' && (
           <div>
             <h2 className="text-white text-xl font-black text-center">
@@ -186,6 +225,18 @@ export default function QuickStartWidget({ onComplete, onResult }) {
 
   return (
     <div className="px-4 pb-2">
+      {showBetweenAd && betweenAd && (
+        <AdOverlay ad={betweenAd} onClose={handleBetweenAdClose} />
+      )}
+
+      {showBonusPopup && bonusAd && (
+        <PostQuizBonusPopup
+          bonusAd={bonusAd}
+          onClose={handleBonusClose}
+          onCoinsUpdated={handleBonusCoinsUpdated}
+        />
+      )}
+
       {/* Title */}
       <div className="text-center mb-4 pt-2">
         <h2 className="text-white text-2xl font-black">Quick Start!</h2>
@@ -194,7 +245,7 @@ export default function QuickStartWidget({ onComplete, onResult }) {
         </p>
       </div>
 
-      {/* Centered progress pill */}
+      {/* Progress pill */}
       <div className="flex justify-center mb-4">
         <span className="bg-[#1e2a3a] text-white text-sm font-semibold px-6 py-1.5 rounded-full border border-white/15">
           {current + 1}/{totalQ} Question
