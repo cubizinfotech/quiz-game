@@ -6,18 +6,21 @@ import { useUserAuth } from '../context/UserAuthContext';
 export default function Navbar({ onMenuOpen }) {
   const { user } = useUserAuth();
   const [siteName, setSiteName] = useState('QuizGame');
-  const [logo, setLogo] = useState('');
 
   useEffect(() => {
     api.get('/settings').then((res) => {
-      setSiteName(res.data.data.site_name || 'QuizGame');
-      setLogo(res.data.data.logo || '');
+      const d = res.data.data;
+      setSiteName(d.site_name || 'QuizGame');
+      // Apply favicon from settings, fallback to our SVG logo
+      const faviconHref = d.favicon || '/logo.svg';
+      const link = document.querySelector("link[rel='icon']");
+      if (link) link.href = faviconHref;
     }).catch(() => {});
   }, []);
 
   return (
     <header className="z-10 bg-card border-b border-white/10 shrink-0">
-      <div className="flex items-center justify-between px-4 py-3 gap-3">
+      <div className="relative flex items-center justify-between px-4 py-3">
         {/* Hamburger */}
         <button
           onClick={onMenuOpen}
@@ -29,15 +32,8 @@ export default function Navbar({ onMenuOpen }) {
           <span className="w-5 h-0.5 bg-current rounded-full" />
         </button>
 
-        {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 shrink-0 flex-1">
-          {logo ? (
-            <img src={logo} alt={siteName} className="h-8 w-auto object-contain" onError={() => setLogo('')} />
-          ) : (
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">Q</span>
-            </div>
-          )}
+        {/* Site name — absolutely centered */}
+        <Link to="/" className="absolute left-1/2 -translate-x-1/2">
           <span className="text-white font-bold text-base">{siteName}</span>
         </Link>
 

@@ -5,7 +5,13 @@ import UserSidebar from './UserSidebar';
 
 export default function Layout() {
   const { pathname } = useLocation();
-  const hideNav = /^\/quiz\/.+\/play$/.test(pathname) || pathname === '/result';
+  const [navHiddenByChild, setNavHiddenByChild] = useState(false);
+
+  const hideNav =
+    /^\/quiz\/.+\/play$/.test(pathname) ||
+    pathname === '/result' ||
+    navHiddenByChild;
+
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
@@ -13,7 +19,7 @@ export default function Layout() {
       <UserSidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
       {!hideNav && <Navbar onMenuOpen={() => setSidebarOpen(true)} />}
       <main className="app-content">
-        <Outlet />
+        <Outlet context={{ setNavHiddenByChild }} />
       </main>
     </div>
   );

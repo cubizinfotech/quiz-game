@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500">
+  <rect width="500" height="500" fill="#0B1426"/>
+  <!-- Yellow sparkle strokes -->
+  <line x1="88" y1="128" x2="64" y2="108" stroke="#FBBF24" stroke-width="13" stroke-linecap="round"/>
+  <line x1="70" y1="178" x2="42" y2="176" stroke="#FBBF24" stroke-width="13" stroke-linecap="round"/>
+  <line x1="84" y1="228" x2="62" y2="250" stroke="#FBBF24" stroke-width="13" stroke-linecap="round"/>
+  <!-- Blue Q ring -->
+  <circle cx="245" cy="200" r="130" fill="none" stroke="#2563EB" stroke-width="50"/>
+  <!-- Speech-bubble tail -->
+  <polygon points="205,320 174,392 295,320" fill="#2563EB"/>
+  <rect x="177" y="315" width="120" height="18" fill="#2563EB"/>
+  <!-- Yellow chat-bubble -->
+  <rect x="158" y="118" width="175" height="145" rx="30" fill="#F59E0B"/>
+  <polygon points="178,263 162,295 232,263" fill="#F59E0B"/>
+  <!-- Question mark -->
+  <text x="245" y="237" text-anchor="middle" font-size="105" font-weight="900" font-family="'Arial Black',Arial,sans-serif" fill="#1E293B">?</text>
+  <!-- Pink checkmark badge -->
+  <circle cx="360" cy="92" r="46" fill="#EC4899"/>
+  <polyline points="336,93 352,110 387,74" stroke="white" stroke-width="9" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Quiz Game text -->
+  <text x="250" y="445" text-anchor="middle" font-family="'Arial Black',Arial,sans-serif" font-weight="900" font-size="60">
+    <tspan fill="white">Quiz </tspan><tspan fill="#2563EB">Game</tspan>
+  </text>
+  <!-- Tagline -->
+  <text x="250" y="483" text-anchor="middle" font-family="Arial,sans-serif" font-size="20" fill="#9CA3AF" letter-spacing="1">Play <tspan fill="#EC4899" font-size="22">&#x25CF;</tspan> Learn <tspan fill="#EC4899" font-size="22">&#x25CF;</tspan> Win</text>
+</svg>

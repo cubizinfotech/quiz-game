@@ -8,7 +8,7 @@ const OPTION_KEYS   = ['optionA', 'optionB', 'optionC', 'optionD'];
 const OPTION_LABELS = ['A', 'B', 'C', 'D'];
 export const LS_KEY = 'quickQuizCompleted';
 
-export default function QuickStartWidget({ onComplete, onResult }) {
+export default function QuickStartWidget({ onComplete, onResult, onNavHide }) {
   const { isGuest, updateCoins } = useUserAuth();
 
   const [quiz, setQuiz]                 = useState(null);
@@ -30,6 +30,13 @@ export default function QuickStartWidget({ onComplete, onResult }) {
   const afterBetweenAdRef = useRef(null);
   const pendingFinishRef  = useRef(null);
   const correctCountRef   = useRef(0);
+
+  // Hide navbar only while questions are being answered
+  useEffect(() => {
+    const active = phase === 'loading' || phase === 'playing';
+    onNavHide?.(active);
+    return () => onNavHide?.(false);
+  }, [phase, onNavHide]);
 
   useEffect(() => {
     if (sessionStorage.getItem(LS_KEY) === 'true') { setPhase('empty'); return; }

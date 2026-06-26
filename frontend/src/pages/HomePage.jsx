@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { useOutletContext } from 'react-router-dom';
 import api from '../api/axios';
 import QuizCard from '../components/QuizCard';
 import FunFactCard from '../components/FunFactCard';
@@ -91,6 +92,7 @@ function CategoryTabs({ categories, activeCategory, onSelect, quizCountByCategor
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function HomePage() {
+  const { setNavHiddenByChild } = useOutletContext() || {};
   const [categories, setCategories] = useState([]);
   const [featured, setFeatured]     = useState([]);
   const [latest, setLatest]         = useState([]);
@@ -205,6 +207,7 @@ export default function HomePage() {
             <QuickStartWidget
               onComplete={handleOnboardingDone}
               onResult={() => setWidgetShowingResult(true)}
+              onNavHide={setNavHiddenByChild}
             />
           </div>
 
