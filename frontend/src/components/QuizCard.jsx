@@ -4,6 +4,9 @@ import api from '../api/axios';
 import AdOverlay from './AdOverlay';
 import { useUserAuth } from '../context/UserAuthContext';
 
+// Set to true once Google AdSense is approved and serving real ads
+const ADSENSE_READY = false;
+
 export default function QuizCard({ quiz, ads = {} }) {
   const navigate = useNavigate();
   const { user, isGuest, updateCoins } = useUserAuth();
@@ -25,7 +28,7 @@ export default function QuizCard({ quiz, ads = {} }) {
   const goToQuiz = () => navigate(`/quiz/${quiz.slug}`);
 
   const handleClick = () => {
-    if (insufficient) {
+    if (insufficient && ADSENSE_READY) {
       // Prefetch rewarded ad while showing modal
       api.get('/ads').then((res) => {
         const rewarded = (res.data.data || []).find((a) => a.position === 'rewarded_video');
