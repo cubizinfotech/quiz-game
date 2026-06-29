@@ -352,17 +352,14 @@ const submitAttempt = async (quizId, answers, timeTaken = 0, userId = null, isGu
     throw err;
   }
 
-  // Enforce entry fee for logged-in (non-guest) users
+  // Coin balance check temporarily disabled — users can play regardless of balance
   const entryFee = quizRow.entry_fee || 0;
   if (entryFee > 0 && userId && !isGuest) {
     const [[userRow]] = await pool.query('SELECT coins FROM users WHERE id = ? LIMIT 1', [Number(userId)]);
-    if (!userRow || userRow.coins < entryFee) {
-      const err = new Error('Insufficient coins to join this quiz');
-      err.statusCode = 402;
-      throw err;
+    // Deduct entry fee only if user has sufficient coins
+    if (userRow && userRow.coins >= entryFee) {
+      await pool.query('UPDATE users SET coins = coins - ? WHERE id = ?', [entryFee, Number(userId)]);
     }
-    // Deduct entry fee — no coin_transactions log to avoid ENUM constraint
-    await pool.query('UPDATE users SET coins = coins - ? WHERE id = ?', [entryFee, Number(userId)]);
   }
 
   const [questionRows] = await pool.query(

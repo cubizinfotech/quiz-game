@@ -156,18 +156,13 @@ const joinQuiz = async (req, res, next) => {
       return res.status(401).json({ success: false, message: 'Login required' });
     }
 
-    // Check balance — applies equally to guests and logged-in users
+    // Coin balance check temporarily disabled — users can play regardless of balance
     const [[userRow]] = await pool.query('SELECT coins FROM users WHERE id = ? LIMIT 1', [Number(userId)]);
-    if (!userRow || userRow.coins < entryFee) {
-      return res.status(402).json({
-        success: false,
-        message: 'Insufficient coins',
-        data: { required: entryFee, balance: userRow?.coins ?? 0 },
-      });
-    }
 
-    // Deduct entry fee
-    await pool.query('UPDATE users SET coins = coins - ? WHERE id = ?', [entryFee, Number(userId)]);
+    // Deduct entry fee only if user has sufficient coins
+    if (userRow && userRow.coins >= entryFee) {
+      await pool.query('UPDATE users SET coins = coins - ? WHERE id = ?', [entryFee, Number(userId)]);
+    }
     try {
       await pool.query(
         'INSERT INTO coin_transactions (user_id, amount, type, description) VALUES (?, ?, ?, ?)',

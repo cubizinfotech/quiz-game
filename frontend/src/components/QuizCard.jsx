@@ -23,7 +23,7 @@ export default function QuizCard({ quiz, ads = {} }) {
   const entryFee      = quiz.entryFee ?? 0;
   const winCoins      = questionCount * 100;
   const userCoins     = user?.coins ?? 0;
-  const insufficient  = entryFee > 0 && userCoins < entryFee;
+  const insufficient  = false; // temporarily disabled — users can play regardless of coin balance
 
   const goToQuiz = () => navigate(`/quiz/${quiz.slug}`);
 
