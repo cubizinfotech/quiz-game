@@ -25,6 +25,102 @@ const POSTS = [
     date: 'May 28, 2025',
     emoji: '🚀',
   },
+  {
+    id: 4,
+    title: 'Top 5 Bollywood Quiz Questions That Stump Everyone',
+    excerpt: 'Think you know Bollywood? These five tricky questions have the lowest correct-answer rates on our platform.',
+    tag: 'Fun',
+    date: 'May 20, 2025',
+    emoji: '🎬',
+  },
+  {
+    id: 5,
+    title: 'How to Use Lifelines Wisely',
+    excerpt: 'Lifelines can save your score — but only if used at the right moment. Here\'s a smart guide on when to use each one.',
+    tag: 'Tips & Tricks',
+    date: 'May 15, 2025',
+    emoji: '💡',
+  },
+  {
+    id: 6,
+    title: 'Cricket Quiz: Test Your IPL Knowledge',
+    excerpt: 'IPL fans, this one\'s for you! Play our Cricket category and see how well you know your favourite teams and players.',
+    tag: 'Sports',
+    date: 'May 10, 2025',
+    emoji: '🏏',
+  },
+  {
+    id: 7,
+    title: 'Daily Login Streaks — Why Consistency Pays Off',
+    excerpt: 'Logging in every day builds your streak and unlocks bonus coin rewards. Find out how streaks are calculated.',
+    tag: 'Guide',
+    date: 'May 5, 2025',
+    emoji: '🔥',
+  },
+  {
+    id: 8,
+    title: 'Introducing the Leaderboard: Climb to the Top',
+    excerpt: 'The new leaderboard ranks players by total coins earned this week. Here\'s how the scoring works and how to rank higher.',
+    tag: 'Announcement',
+    date: 'Apr 28, 2025',
+    emoji: '🏆',
+  },
+  {
+    id: 9,
+    title: 'GK Quiz: Boost Your General Knowledge in 10 Minutes',
+    excerpt: 'General Knowledge quizzes are one of the best ways to sharpen your mind. Try our GK category and challenge yourself daily.',
+    tag: 'Tips & Tricks',
+    date: 'Apr 20, 2025',
+    emoji: '🌍',
+  },
+  {
+    id: 10,
+    title: 'How We Pick Our Quiz Questions',
+    excerpt: 'Every question on QuizGame goes through a quality check. Learn about our content process and how we ensure accuracy.',
+    tag: 'Behind the Scenes',
+    date: 'Apr 14, 2025',
+    emoji: '🔍',
+  },
+  {
+    id: 11,
+    title: 'Business & Finance Quiz: Are You Financially Literate?',
+    excerpt: 'Our Business category tests everything from stock markets to startup fundamentals. See how you score!',
+    tag: 'Finance',
+    date: 'Apr 8, 2025',
+    emoji: '📈',
+  },
+  {
+    id: 12,
+    title: 'Referral Program: Earn Coins by Inviting Friends',
+    excerpt: 'Share your invite link and earn bonus coins for every friend who signs up and plays their first quiz.',
+    tag: 'Announcement',
+    date: 'Apr 1, 2025',
+    emoji: '🎁',
+  },
+  {
+    id: 13,
+    title: 'Science Quiz: From Atoms to the Universe',
+    excerpt: 'Explore physics, chemistry, biology, and space in our Science category — now live with 50+ questions.',
+    tag: 'Science',
+    date: 'Mar 25, 2025',
+    emoji: '🔬',
+  },
+  {
+    id: 14,
+    title: '5 Common Mistakes Quiz Players Make',
+    excerpt: 'Rushing through questions, skipping lifelines, ignoring the timer — avoid these habits to boost your score significantly.',
+    tag: 'Tips & Tricks',
+    date: 'Mar 18, 2025',
+    emoji: '⚠️',
+  },
+  {
+    id: 15,
+    title: 'QuizGame Reaches 1 Million Players!',
+    excerpt: 'We\'ve hit a huge milestone — 1 million players and counting! Thank you for being part of this incredible journey.',
+    tag: 'Milestone',
+    date: 'Mar 10, 2025',
+    emoji: '🎉',
+  },
 ];
 
 export default function BlogPage() {
@@ -72,7 +168,7 @@ export default function BlogPage() {
           </div>
         ))}
 
-        <p className="text-center text-gray-600 text-xs pt-2">More posts coming soon!</p>
+        <p className="text-center text-gray-600 text-xs pt-2">Stay tuned for more updates!</p>
       </div>
     </div>
   );
