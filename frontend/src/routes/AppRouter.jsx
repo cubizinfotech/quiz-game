@@ -14,6 +14,8 @@ import CoinHistoryPage from '../pages/CoinHistoryPage';
 import BlogPage from '../pages/BlogPage';
 import ContactPage from '../pages/ContactPage';
 import ReportPage from '../pages/ReportPage';
+import PrivacyPolicyPage from '../pages/PrivacyPolicyPage';
+import AboutUsPage from '../pages/AboutUsPage';
 
 import AdminLogin from '../pages/admin/AdminLogin';
 import Dashboard from '../pages/admin/Dashboard';
@@ -41,6 +43,8 @@ export default function AppRouter() {
           <Route path="/blog" element={<BlogPage />} />
           <Route path="/contact" element={<ContactPage />} />
           <Route path="/report" element={<ReportPage />} />
+          <Route path="/privacy-policy" element={<PrivacyPolicyPage />} />
+          <Route path="/about" element={<AboutUsPage />} />
         </Route>
 
         {/* User auth — standalone pages (no navbar) */}

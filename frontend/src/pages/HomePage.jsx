@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { useOutletContext } from 'react-router-dom';
+import { useOutletContext, Link } from 'react-router-dom';
 import api from '../api/axios';
 import QuizCard from '../components/QuizCard';
 import FunFactCard from '../components/FunFactCard';
@@ -273,6 +273,16 @@ export default function HomePage() {
                   ))}
                 </ul>
               </section>
+
+              {/* Privacy Policy link */}
+              <div className="px-4 mb-6 text-center">
+                <Link
+                  to="/privacy-policy"
+                  className="text-gray-500 text-xs hover:text-gray-300 transition-colors underline underline-offset-2"
+                >
+                  Privacy Policy
+                </Link>
+              </div>
             </>
           )}
         </>
