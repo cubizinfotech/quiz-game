@@ -31,12 +31,9 @@ export default function QuickStartWidget({ onComplete, onResult, onNavHide }) {
   const pendingFinishRef  = useRef(null);
   const correctCountRef   = useRef(0);
 
-  // Hide navbar only while questions are being answered
   useEffect(() => {
-    const active = phase === 'loading' || phase === 'playing';
-    onNavHide?.(active);
     return () => onNavHide?.(false);
-  }, [phase, onNavHide]);
+  }, [onNavHide]);
 
   useEffect(() => {
     if (sessionStorage.getItem(LS_KEY) === 'true') { setPhase('empty'); return; }

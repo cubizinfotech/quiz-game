@@ -234,6 +234,45 @@ export default function HomePage() {
                   </div>
                 </section>
               )}
+
+              {/* How to Play? */}
+              <section className="px-4 mb-5">
+                <div className="bg-card border border-white/10 rounded-2xl p-5">
+                  <h2 className="text-white text-base font-bold mb-4">How to Play?</h2>
+                  <ol className="flex flex-col gap-3">
+                    {[
+                      'Select your favorite quiz category',
+                      'Answer questions correctly to earn coins',
+                      'Compete on leaderboards',
+                      'Redeem coins for exciting rewards',
+                    ].map((step, i) => (
+                      <li key={i} className="flex items-start gap-2.5 text-sm text-gray-300">
+                        <span className="text-primary font-bold shrink-0">{i + 1}.</span>
+                        {step}
+                      </li>
+                    ))}
+                  </ol>
+                </div>
+              </section>
+
+              {/* Play Quiz and Win Coins! */}
+              <section className="px-4 mb-5">
+                <h2 className="text-white text-base font-bold text-center mb-2">Play Quiz and Win Coins!</h2>
+                <div className="border-b border-white/20 mb-4" />
+                <ul className="flex flex-col gap-2.5">
+                  {[
+                    'Play Quizzes in 25+ categories like GK, Sports, Bollywood, Business, Cricket & more!',
+                    'Compete with lakhs of other players!',
+                    'Win coins for every game',
+                    'Trusted by millions of other quiz enthusiasts like YOU!',
+                  ].map((item, i) => (
+                    <li key={i} className="flex items-start gap-2.5 text-gray-300 text-sm leading-relaxed">
+                      <span className="shrink-0 mt-1.5 w-1.5 h-1.5 rounded-full bg-primary" />
+                      {item}
+                    </li>
+                  ))}
+                </ul>
+              </section>
             </>
           )}
         </>
