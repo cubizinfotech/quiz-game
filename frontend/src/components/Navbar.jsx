@@ -5,12 +5,12 @@ import { useUserAuth } from '../context/UserAuthContext';
 
 export default function Navbar({ onMenuOpen }) {
   const { user } = useUserAuth();
-  const [siteName, setSiteName] = useState('QuizGame');
+  const [siteName, setSiteName] = useState('Quziky');
 
   useEffect(() => {
     api.get('/settings').then((res) => {
       const d = res.data.data;
-      setSiteName(d.site_name || 'QuizGame');
+      setSiteName(d.site_name || 'Quziky');
       // Apply favicon from settings, fallback to our SVG logo
       const faviconHref = d.favicon || '/logo.svg';
       const link = document.querySelector("link[rel='icon']");

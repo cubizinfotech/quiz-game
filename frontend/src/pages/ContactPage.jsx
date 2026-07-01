@@ -39,7 +39,7 @@ export default function ContactPage() {
         {/* Info cards */}
         <div className="grid grid-cols-2 gap-3">
           {[
-            { icon: '📧', label: 'Email', value: 'support@quizgame.com' },
+            { icon: '📧', label: 'Email', value: 'support@Quziky.com' },
             { icon: '⏱️', label: 'Response Time', value: 'Within 24 hours' },
           ].map((item) => (
             <div key={item.label} className="bg-card border border-white/10 rounded-2xl p-4 text-center">

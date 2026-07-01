@@ -76,7 +76,7 @@ const POSTS = [
   {
     id: 10,
     title: 'How We Pick Our Quiz Questions',
-    excerpt: 'Every question on QuizGame goes through a quality check. Learn about our content process and how we ensure accuracy.',
+    excerpt: 'Every question on Quziky goes through a quality check. Learn about our content process and how we ensure accuracy.',
     tag: 'Behind the Scenes',
     date: 'Apr 14, 2025',
     emoji: '🔍',
@@ -115,7 +115,7 @@ const POSTS = [
   },
   {
     id: 15,
-    title: 'QuizGame Reaches 1 Million Players!',
+    title: 'Quziky Reaches 1 Million Players!',
     excerpt: 'We\'ve hit a huge milestone — 1 million players and counting! Thank you for being part of this incredible journey.',
     tag: 'Milestone',
     date: 'Mar 10, 2025',
@@ -144,7 +144,7 @@ export default function BlogPage() {
         <div className="bg-primary/10 border border-primary/30 rounded-2xl p-5 text-center">
           <div className="text-4xl mb-2">📝</div>
           <h2 className="text-white font-black text-xl mb-1">Latest Updates</h2>
-          <p className="text-gray-400 text-sm">Tips, announcements, and guides from the QuizGame team.</p>
+          <p className="text-gray-400 text-sm">Tips, announcements, and guides from the Quziky team.</p>
         </div>
 
         {/* Posts */}

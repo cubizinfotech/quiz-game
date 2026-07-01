@@ -78,7 +78,7 @@ export default function ManageSettings() {
                   <label className="text-slate-400 text-xs font-semibold block mb-1.5">Site Name</label>
                   <input
                     className="w-full bg-slate-800 border border-white/10 text-white placeholder-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
-                    placeholder="QuizGame"
+                    placeholder="Quziky"
                     value={form.site_name}
                     onChange={(e) => setForm({ ...form, site_name: e.target.value })}
                   />
@@ -147,10 +147,6 @@ export default function ManageSettings() {
                     <span className="text-white font-black">Q</span>
                   </div>
                 )}
-                <div>
-                  <p className="text-white font-bold text-sm">{form.site_name || 'QuizGame'}</p>
-                  <p className="text-slate-500 text-xs">{form.footer_text || '© 2024 QuizGame'}</p>
-                </div>
               </div>
               <p className="text-slate-600 text-xs">This is how your site appears in the navbar and footer.</p>
             </div>

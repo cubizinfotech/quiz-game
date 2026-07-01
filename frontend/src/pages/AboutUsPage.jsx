@@ -34,7 +34,7 @@ export default function AboutUsPage() {
         {/* Hero banner */}
         <div className="bg-primary/10 border border-primary/30 rounded-2xl p-6 text-center">
           <div className="text-5xl mb-3">🎮</div>
-          <h2 className="text-white font-black text-2xl mb-2">QuizGame</h2>
+          <h2 className="text-white font-black text-2xl mb-2">Quziky</h2>
           <p className="text-gray-400 text-sm leading-relaxed">
             India's fastest-growing quiz platform where knowledge meets rewards.
           </p>
@@ -44,7 +44,7 @@ export default function AboutUsPage() {
         <div className="bg-card border border-white/10 rounded-2xl p-5">
           <h3 className="text-white font-bold text-base mb-3">Who We Are</h3>
           <p className="text-gray-400 text-sm leading-relaxed mb-3">
-            QuizGame was built by a passionate team of developers and educators who believe
+            Quziky was built by a passionate team of developers and educators who believe
             learning should be fun and rewarding. We started with a simple idea — what if you
             could earn real coins just by answering questions correctly?
           </p>
@@ -57,7 +57,7 @@ export default function AboutUsPage() {
 
         {/* Stats */}
         <div className="bg-card border border-white/10 rounded-2xl p-5">
-          <h3 className="text-white font-bold text-base mb-4">QuizGame by the Numbers</h3>
+          <h3 className="text-white font-bold text-base mb-4">Quziky by the Numbers</h3>
           <div className="grid grid-cols-2 gap-3">
             {STATS.map((stat) => (
               <div key={stat.label} className="bg-bg border border-white/10 rounded-xl py-4 text-center">
@@ -72,7 +72,7 @@ export default function AboutUsPage() {
         <div className="bg-card border border-white/10 rounded-2xl p-5">
           <h3 className="text-white font-bold text-base mb-3">Our Mission</h3>
           <p className="text-gray-400 text-sm leading-relaxed">
-            To make learning addictive. We want every person who opens QuizGame to walk
+            To make learning addictive. We want every person who opens Quziky to walk
             away a little smarter, a little richer in coins, and excited to come back tomorrow.
             We are committed to building a platform that is fair, fun, and accessible to everyone.
           </p>
@@ -108,10 +108,6 @@ export default function AboutUsPage() {
             Contact Us
           </button>
         </div>
-
-        <p className="text-center text-gray-600 text-xs pt-2 pb-2">
-          © 2025 QuizGame. Made with ❤️ in India.
-        </p>
       </div>
     </div>
   );

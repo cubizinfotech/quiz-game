@@ -45,7 +45,7 @@ export default function Sidebar({ open, onClose }) {
             <span className="text-white font-black text-lg">Q</span>
           </div>
           <div className="flex-1 min-w-0">
-            <p className="text-white font-bold text-sm leading-none">QuizGame</p>
+            <p className="text-white font-bold text-sm leading-none">Quziky</p>
             <p className="text-slate-500 text-xs mt-0.5">Admin Panel</p>
           </div>
           <button

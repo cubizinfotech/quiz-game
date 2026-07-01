@@ -34,7 +34,7 @@ export default function AdminLogin() {
               <span className="text-white font-black text-3xl">Q</span>
             </div>
             <h1 className="text-white text-2xl font-bold">Admin Login</h1>
-            <p className="text-slate-400 text-sm mt-1">QuizGame Management Dashboard</p>
+            <p className="text-slate-400 text-sm mt-1">Quziky Management Dashboard</p>
           </div>
 
           {error && (
@@ -52,7 +52,7 @@ export default function AdminLogin() {
                 type="email"
                 value={form.email}
                 onChange={(e) => setForm({ ...form, email: e.target.value })}
-                placeholder="admin@quizgame.com"
+                placeholder="admin@Quziky.com"
                 required
                 autoComplete="email"
                 className="w-full bg-slate-800 border border-white/10 text-white placeholder-slate-600 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition-colors"
@@ -85,7 +85,7 @@ export default function AdminLogin() {
         </div>
 
         <p className="text-center text-slate-600 text-xs mt-6">
-          QuizGame Admin Panel · Protected access only
+          Quziky Admin Panel · Protected access only
         </p>
       </div>
     </div>

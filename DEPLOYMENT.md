@@ -1,4 +1,4 @@
-# Quiz Game — Deployment Guide
+# Quziky — Deployment Guide
 
 ## Prerequisites on the Server
 
@@ -230,7 +230,7 @@ sudo systemctl status mysql
 Open your browser:
 - **Frontend:** `https://yourdomain.com`
 - **Admin panel:** `https://yourdomain.com/admin/login`
-- **Default credentials:** `admin@quizgame.com` / `admin123`
+- **Default credentials:** `admin@Quziky.com` / `admin123`
 
 ---
 
@@ -258,7 +258,7 @@ npm run dev        # runs on http://localhost:5173
 
 # 5. Admin login
 # URL: http://localhost:5173/admin/login
-# Email: admin@quizgame.com
+# Email: admin@Quziky.com
 # Password: admin123
 ```
 

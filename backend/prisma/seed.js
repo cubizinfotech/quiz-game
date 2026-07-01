@@ -18,19 +18,19 @@ async function main() {
   await pool.query(
     `INSERT INTO admins (email, password, name) VALUES (?, ?, ?)
      ON DUPLICATE KEY UPDATE updated_at = NOW()`,
-    ['admin@quizgame.com', hashedPassword, 'Super Admin']
+    ['admin@Quziky.com', hashedPassword, 'Super Admin']
   );
 
   // Default settings
   const defaultSettings = [
-    ['site_name', 'QuizGame'],
+    ['site_name', 'Quziky'],
     ['logo', '/logo.png'],
     ['favicon', '/favicon.ico'],
-    ['footer_text', '© 2026 QuizGame. All rights reserved.'],
+    ['footer_text', '© 2026 Quziky. All rights reserved.'],
   ];
   for (const [key, value] of defaultSettings) {
     await pool.query(
-      'INSERT INTO settings (`key`, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE updated_at = NOW()',
+      'INSERT INTO settings (`key`, value) VALUES (?, ?) ON DUPLICATE KEY UPDATE value = VALUES(value), updated_at = NOW()',
       [key, value]
     );
   }

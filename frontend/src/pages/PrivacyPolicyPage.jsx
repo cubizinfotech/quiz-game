@@ -11,7 +11,7 @@ const SECTIONS = [
   },
   {
     title: '3. Cookies & Local Storage',
-    body: 'QuizGame uses cookies and browser local storage to keep you logged in between sessions and to remember your onboarding progress. We do not use cookies for advertising tracking purposes.',
+    body: 'Quziky uses cookies and browser local storage to keep you logged in between sessions and to remember your onboarding progress. We do not use cookies for advertising tracking purposes.',
   },
   {
     title: '4. Third-Party Services',
@@ -23,7 +23,7 @@ const SECTIONS = [
   },
   {
     title: '6. Children\'s Privacy',
-    body: 'QuizGame is intended for users aged 13 and above. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal data, please contact us so we can remove it.',
+    body: 'Quziky is intended for users aged 13 and above. We do not knowingly collect personal information from children under 13. If you believe a child has provided us with personal data, please contact us so we can remove it.',
   },
   {
     title: '7. Your Rights',
@@ -66,7 +66,7 @@ export default function PrivacyPolicyPage() {
         {/* Intro */}
         <div className="bg-card border border-white/10 rounded-2xl p-5">
           <p className="text-gray-300 text-sm leading-relaxed">
-            At <span className="text-white font-semibold">QuizGame</span>, we are committed to
+            At <span className="text-white font-semibold">Quziky</span>, we are committed to
             protecting your personal information and being transparent about the data we collect.
             This Privacy Policy explains what information we collect, why we collect it, and how
             we use it.
@@ -80,10 +80,6 @@ export default function PrivacyPolicyPage() {
             <p className="text-gray-400 text-sm leading-relaxed">{section.body}</p>
           </div>
         ))}
-
-        <p className="text-center text-gray-600 text-xs pt-2 pb-2">
-          © 2025 QuizGame. All rights reserved.
-        </p>
       </div>
     </div>
   );

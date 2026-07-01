@@ -1,7 +1,7 @@
 {
   "name": "quiz-game-backend",
   "version": "1.0.0",
-  "description": "Quiz Game Backend API",
+  "description": "Quziky Backend API",
   "main": "server.js",
   "scripts": {
     "start": "node server.js",
